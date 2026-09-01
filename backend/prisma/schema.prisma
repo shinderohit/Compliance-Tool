@@ -1,0 +1,609 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id          String             @id @default(uuid())
+  name        String
+  email       String             @unique
+  password    String
+  temporaryPassword String?
+  contactNumber String?
+  role        Role
+  isActive    Boolean            @default(true)
+  createdAt   DateTime           @default(now())
+  updatedAt   DateTime           @updatedAt
+  client      Client?
+  company     Company?
+  uploads     ComplianceUpload[]
+  createdKaos Kao[]              @relation("CreatedBy")
+  kao         Kao?
+
+  @@index([email])
+  @@map("users")
+}
+
+model Kao {
+  id          String   @id @default(uuid())
+  kaoCode     String?  @unique
+  name        String
+  slug        String   @unique
+  email       String   @unique
+  contactNumber String?
+  approvalStatus String @default("PENDING")
+  approvedAt  DateTime?
+  approvedBy  String?
+  userId      String   @unique
+  createdById String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  clients     Client[]
+  createdBy   User     @relation("CreatedBy", fields: [createdById], references: [id])
+  user        User     @relation(fields: [userId], references: [id])
+
+  @@index([slug])
+  @@map("kaos")
+}
+
+model Client {
+  id                              String          @id @default(uuid())
+  clientCode                      String?         @unique
+  name                            String
+  slug                            String          @unique
+  email                           String          @unique
+  userId                          String          @unique
+  kaoId                           String
+  serviceModel                    String          @default("SAAS")
+  approvalStatus                  String          @default("PENDING")
+  approvedAt                      DateTime?
+  approvedBy                      String?
+  state                           String?
+  city                            String?
+  location                        String?
+  pincode                         String?
+  panNumber                       String?
+  panCertificate                  Json?
+  gstNumber                       String?
+  pfNumber                        String?
+  pfCertificate                   Json?
+  esicNumber                      String?
+  esicCertificate                 Json?
+  ptNumber                        String?
+  ptCertificate                   Json?
+  lwfNumber                       String?
+  lwfCertificate                  Json?
+  bulkUpload                      Json?
+  companyNameAsPerGstCertificate  String
+  gstCertificate                  Json?
+  seDetails                       String
+  seCertificate                   Json?
+  natureOfWork                    String
+  industryId                      String?
+  appropriateGovernment           String
+  createdAt                       DateTime        @default(now())
+  updatedAt                       DateTime        @updatedAt
+  kao                             Kao             @relation(fields: [kaoId], references: [id])
+  user                            User            @relation(fields: [userId], references: [id])
+  industry                        IndustryMaster? @relation(fields: [industryId], references: [id])
+  companies                       Company[]
+
+  @@index([slug])
+  @@index([industryId])
+  @@map("clients")
+}
+
+model Company {
+  id                String             @id @default(uuid())
+  companyCode       String?            @unique
+  branchCode        String?
+  name              String
+  slug              String             @unique
+  email             String             @unique
+  userId            String             @unique
+  clientId          String
+  approvalStatus    String             @default("PENDING")
+  approvedAt        DateTime?
+  approvedBy        String?
+  
+  // Company Profile - Registrations & Certifications
+  pan               String?
+  gst               String?
+  tan               String?
+  cin               String?
+  msme              String?
+  iec               String?
+  pf                String?
+  esic              String?
+  lwf               String?
+  pt                String?
+  factoryLicense    String?
+  tradeLicense      String?
+  
+  // Industry & Business Type
+  industryId        String?
+  businessTypeId    String?
+  description       String?
+  website           String?
+  phone             String?
+  address           String?
+  city              String?
+  state             String?
+  pincode           String?
+  location          String?
+  panCertificate    Json?
+  pfCertificate     Json?
+  esicCertificate   Json?
+  ptCertificate     Json?
+  lwfCertificate    Json?
+  bulkUpload        Json?
+  companyNameAsPerGstCertificate String?
+  gstCertificate    Json?
+  seDetails         String?
+  seCertificate     Json?
+  natureOfWork      String?
+  appropriateGovernment String?
+  
+  createdAt         DateTime           @default(now())
+  updatedAt         DateTime           @updatedAt
+  
+  client            Client             @relation(fields: [clientId], references: [id])
+  user              User               @relation(fields: [userId], references: [id])
+  industry          IndustryMaster?    @relation(fields: [industryId], references: [id])
+  businessType      BusinessTypeMaster? @relation(fields: [businessTypeId], references: [id])
+  
+  uploads           ComplianceUpload[]
+  complianceMasters ComplianceMaster[]
+  branches          Branch[]
+  employees         Employee[]
+  complianceItems   ComplianceItem[]
+  notifications     Notification[]
+  activities        Activity[]
+
+  @@index([slug])
+  @@index([clientId])
+  @@map("companies")
+}
+
+model ComplianceUpload {
+  id              String   @id @default(uuid())
+  title           String
+  fileUrl         String
+  extractedData   Json?
+  aiAnalysis      Json?
+  complianceScore Float?
+  riskLevel       String?
+  companyId       String
+  branchId        String?
+  uploadedById    String
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  company         Company  @relation(fields: [companyId], references: [id])
+  branch          Branch?  @relation(fields: [branchId], references: [id])
+  uploadedBy      User     @relation(fields: [uploadedById], references: [id])
+
+  @@index([companyId])
+  @@index([branchId])
+  @@map("compliance_uploads")
+}
+
+model ComplianceMaster {
+  id         String    @id @default(uuid())
+  uin        String?
+  companyName String?
+  state      String?
+  location   String?
+  lawArea    String?
+  actRule    String?
+  compliance String?
+  gstNumber  String?
+  panNumber  String?
+  complianceType String?
+  complianceScore Float?
+  status     String?
+  dueDate    DateTime?
+  expiryDate DateTime?
+  risk       String?
+  assignedTo String?
+  department String?
+  priority   String?
+  frequency  String?
+  remarks    String?
+  registrations Json?
+  documents     Json?
+  branches      Json?
+  approvalStatus String? @default("DRAFT")
+  approvedAt DateTime?
+  approvedBy String?
+  rejectionReason String?
+
+  companyId String
+  branchId  String?
+  company   Company @relation(fields: [companyId], references: [id])
+  branch    Branch? @relation(fields: [branchId], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([companyId])
+  @@index([branchId])
+}
+
+model AuditLog {
+  id           String   @id @default(uuid())
+  action       String
+  entityType   String
+  entityId     String
+  userId       String
+  userEmail    String
+  companyId    String?
+  changes      Json?
+  reason       String?
+  ipAddress    String?
+  userAgent    String?
+  status       String?
+  errorMessage String?
+  createdAt    DateTime @default(now())
+
+  @@index([entityId])
+  @@index([userId])
+  @@index([companyId])
+  @@index([entityType])
+  @@index([createdAt])
+  @@map("audit_logs")
+}
+
+model StateMaster {
+  id        String @id @default(uuid())
+  name      String @unique
+
+  locations LocationMaster[]
+}
+
+model LocationMaster {
+  id        String @id @default(uuid())
+  name      String
+
+  stateId   String
+  state     StateMaster @relation(fields: [stateId], references: [id])
+}
+
+model LawAreaMaster {
+  id       String @id @default(uuid())
+  name     String @unique
+
+  acts     ActRuleMaster[]
+  compliances ComplianceItem[]
+}
+
+model ActRuleMaster {
+  id          String @id @default(uuid())
+  name        String
+
+  lawAreaId   String
+  lawArea     LawAreaMaster @relation(fields:[lawAreaId], references:[id])
+
+  compliances ComplianceMasterDefinition[]
+}
+
+model ComplianceMasterDefinition {
+  id          String @id @default(uuid())
+  name        String
+
+  actRuleId   String
+  actRule     ActRuleMaster @relation(fields:[actRuleId], references:[id])
+}
+
+// ==================== BRANCH & LOCATION ====================
+model Branch {
+  id              String   @id @default(uuid())
+  name            String
+  code            String   @unique
+  address         String?
+  city            String?
+  state           String?
+  pincode         String?
+  phone           String?
+  email           String?
+  
+  companyId       String
+  company         Company  @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  
+  employees       Employee[]
+  compliances     ComplianceItem[]
+  complianceMasters ComplianceMaster[]
+  uploads         ComplianceUpload[]
+  activities      Activity[]
+  
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  
+  @@index([companyId])
+  @@map("branches")
+}
+
+// ==================== MASTER DATA ====================
+model IndustryMaster {
+  id        String    @id @default(uuid())
+  name      String    @unique
+  code      String?
+  description String?
+  clients   Client[]
+  companies Company[]
+  
+  createdAt DateTime  @default(now())
+  @@map("industry_master")
+}
+
+model BusinessTypeMaster {
+  id        String    @id @default(uuid())
+  name      String    @unique
+  code      String?
+  description String?
+  companies Company[]
+  
+  createdAt DateTime  @default(now())
+  @@map("business_type_master")
+}
+
+model DepartmentMaster {
+  id        String    @id @default(uuid())
+  name      String    @unique
+  code      String?
+  description String?
+  employees Employee[]
+  
+  createdAt DateTime  @default(now())
+  @@map("department_master")
+}
+
+model DesignationMaster {
+  id        String    @id @default(uuid())
+  name      String    @unique
+  code      String?
+  description String?
+  employees Employee[]
+  
+  createdAt DateTime  @default(now())
+  @@map("designation_master")
+}
+
+model Employee {
+  id              String   @id @default(uuid())
+  name            String
+  email           String
+  phone           String?
+  employeeCode    String?
+  
+  companyId       String
+  branchId        String
+  departmentId    String?
+  designationId   String?
+  
+  company         Company           @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  branch          Branch            @relation(fields: [branchId], references: [id], onDelete: Cascade)
+  department      DepartmentMaster? @relation(fields: [departmentId], references: [id])
+  designation     DesignationMaster? @relation(fields: [designationId], references: [id])
+  
+  assignedCompliances ComplianceItem[]
+  createdActivities   Activity[]      @relation("CreatedBy")
+  
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  
+  @@index([companyId])
+  @@index([branchId])
+  @@unique([email, companyId])
+  @@map("employees")
+}
+
+model ComplianceFrequencyMaster {
+  id        String    @id @default(uuid())
+  name      String    @unique
+  code      String    @unique
+  days      Int
+  description String?
+  
+  compliances ComplianceItem[]
+  
+  createdAt DateTime  @default(now())
+  @@map("compliance_frequency_master")
+}
+
+model AuthorityMaster {
+  id        String    @id @default(uuid())
+  name      String    @unique
+  code      String?
+  description String?
+  regulatoryBodies RegulatoryBodyMaster[]
+  compliances ComplianceItem[]
+  
+  createdAt DateTime  @default(now())
+  @@map("authority_master")
+}
+
+model RegulatoryBodyMaster {
+  id        String    @id @default(uuid())
+  name      String    @unique
+  code      String?
+  authorityId String?
+  description String?
+  authority AuthorityMaster? @relation(fields: [authorityId], references: [id])
+  
+  createdAt DateTime  @default(now())
+  @@map("regulatory_body_master")
+}
+
+model HolidayCalendar {
+  id        String    @id @default(uuid())
+  name      String
+  year      Int
+  holidays  Holiday[]
+  
+  createdAt DateTime  @default(now())
+  
+  @@unique([name, year])
+  @@map("holiday_calendar")
+}
+
+model Holiday {
+  id        String    @id @default(uuid())
+  name      String
+  date      DateTime
+  calendarId String
+  calendar  HolidayCalendar @relation(fields: [calendarId], references: [id], onDelete: Cascade)
+  
+  @@index([calendarId])
+  @@map("holidays")
+}
+
+// ==================== COMPLIANCE ITEM (Enhanced) ====================
+model ComplianceItem {
+  id                String   @id @default(uuid())
+  title             String
+  description       String?
+  
+  companyId         String
+  branchId          String?
+  lawAreaId         String?
+  frequencyId       String?
+  authorityId       String?
+  assignedToId      String?
+  
+  status            String   @default("Open")  // Open, Completed, Overdue, Reviewed, Approved, Rejected
+  priority          String   @default("Medium") // Low, Medium, High
+  riskLevel         String?
+  complianceScore   Float?
+  
+  dueDate           DateTime?
+  completionDate    DateTime?
+  expiryDate        DateTime?
+  nextDueDate       DateTime?
+  
+  frequency         ComplianceFrequencyMaster? @relation(fields: [frequencyId], references: [id])
+  recurrencePattern String?  // "daily", "weekly", "monthly", "quarterly", "annual"
+  isRecurring       Boolean  @default(false)
+  
+  company           Company  @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  branch            Branch?  @relation(fields: [branchId], references: [id])
+  lawArea           LawAreaMaster? @relation(fields: [lawAreaId], references: [id])
+  authority         AuthorityMaster? @relation(fields: [authorityId], references: [id])
+  assignedTo        Employee? @relation(fields: [assignedToId], references: [id])
+  
+  attachments       Attachment[]
+  approvals         ApprovalFlow[]
+  auditTrails       AuditTrail[]
+  
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+  
+  @@index([companyId])
+  @@index([branchId])
+  @@index([status])
+  @@index([dueDate])
+  @@map("compliance_items")
+}
+
+// ==================== ATTACHMENTS ====================
+model Attachment {
+  id              String   @id @default(uuid())
+  name            String
+  fileUrl         String
+  fileType        String
+  size            Int?
+  complianceItemId String
+  compliance      ComplianceItem @relation(fields: [complianceItemId], references: [id], onDelete: Cascade)
+  
+  createdAt       DateTime @default(now())
+  
+  @@index([complianceItemId])
+  @@map("attachments")
+}
+
+// ==================== APPROVALS ====================
+model ApprovalFlow {
+  id              String   @id @default(uuid())
+  complianceItemId String
+  compliance      ComplianceItem @relation(fields: [complianceItemId], references: [id], onDelete: Cascade)
+  
+  status          String   @default("Pending") // Pending, Approved, Rejected
+  comments        String?
+  
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  
+  @@index([complianceItemId])
+  @@map("approval_flows")
+}
+
+// ==================== AUDIT TRAIL ====================
+model AuditTrail {
+  id              String   @id @default(uuid())
+  complianceItemId String
+  compliance      ComplianceItem @relation(fields: [complianceItemId], references: [id], onDelete: Cascade)
+  
+  action          String   // "created", "updated", "status_changed", "assigned", "approved", "rejected"
+  oldValue        Json?
+  newValue        Json?
+  changedBy       String?
+  
+  createdAt       DateTime @default(now())
+  
+  @@index([complianceItemId])
+  @@index([action])
+  @@map("audit_trails")
+}
+
+// ==================== NOTIFICATIONS ====================
+model Notification {
+  id              String   @id @default(uuid())
+  companyId       String
+  company         Company  @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  
+  type            String   // "task", "renewal", "upload", "alert", "approval", "deadline"
+  title           String
+  message         String
+  data            Json?
+  
+  isRead          Boolean  @default(false)
+  readAt          DateTime?
+  
+  createdAt       DateTime @default(now())
+  
+  @@index([companyId])
+  @@index([isRead])
+  @@map("notifications")
+}
+
+// ==================== ACTIVITY LOG ====================
+model Activity {
+  id              String   @id @default(uuid())
+  companyId       String
+  branchId        String?
+  createdById     String
+  
+  company         Company  @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  branch          Branch?  @relation(fields: [branchId], references: [id])
+  createdBy       Employee @relation("CreatedBy", fields: [createdById], references: [id])
+  
+  type            String   // "upload", "compliance_completed", "approval", "assignment", etc
+  description     String
+  metadata        Json?
+  
+  createdAt       DateTime @default(now())
+  
+  @@index([companyId])
+  @@index([type])
+  @@map("activities")
+}
+
+enum Role {
+  SUPER_ADMIN
+  KAO
+  CLIENT
+  COMPANY
+}

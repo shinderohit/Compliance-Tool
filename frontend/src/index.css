@@ -1,0 +1,44 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+body {
+  margin: 0;
+  padding: 0;
+  background: #FFFFFF;
+  color: #18206F;
+  font-family: sans-serif;
+}
+
+/* Global type scale reduction: every common Tailwind text size is reduced by 3px or less. */
+.text-xs {
+  font-size: 0.6875rem;
+}
+
+.text-sm {
+  font-size: 0.75rem;
+}
+
+.text-md {
+  font-size: 0.875rem;
+}
+
+.text-lg {
+  font-size: 0.9375rem;
+}
+
+.text-xl {
+  font-size: 1.0625rem;
+}
+
+.text-2xl {
+  font-size: 1.3125rem;
+}
+
+.text-3xl {
+  font-size: 1.6875rem;
+}
+
+.text-4xl {
+  font-size: 2.0625rem;
+}

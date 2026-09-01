@@ -1,0 +1,2 @@
+ALTER TABLE "ComplianceMaster"
+ADD COLUMN IF NOT EXISTS "complianceScore" DOUBLE PRECISION;

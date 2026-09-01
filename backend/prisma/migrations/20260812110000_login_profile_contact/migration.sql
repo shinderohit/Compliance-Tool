@@ -1,0 +1,3 @@
+ALTER TABLE "users"
+ADD COLUMN IF NOT EXISTS "temporaryPassword" TEXT,
+ADD COLUMN IF NOT EXISTS "contactNumber" TEXT;
