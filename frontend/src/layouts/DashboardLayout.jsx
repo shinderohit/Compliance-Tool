@@ -3,10 +3,10 @@ import { Outlet } from "react-router-dom";
 
 export default function DashboardLayout() {
   return (
-    <div className="min-h-screen bg-[#FFFFFF] text-[#18206F] flex">
+    <div className="app-shell text-[#18206F]">
       <Sidebar />
 
-      <main className="flex-1 p-8 overflow-y-auto">
+      <main className="main-panel overflow-y-auto">
         <Outlet />
       </main>
     </div>

@@ -108,115 +108,146 @@ export default function Login() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-background min-h-screen text-primary">
-      <form
-        onSubmit={mode === "login" ? handleLogin : handleForgotPassword}
-        className="bg-white p-10 rounded-2xl w-[400px] border border-[#CBCBD4] shadow-2xl"
-      >
-        <h1 className="text-3xl font-bold mb-2">AI Compliance SaaS</h1>
+    <div className="login-page">
+      <div className="login-shell">
+        <aside className="login-brand">
+          <div className="brand-badge bg-white/10 text-white border-white/10">
+            ViMATE
+          </div>
+          <h2>AI Compliance SaaS</h2>
+          <p>
+            {mode === "login"
+              ? "Secure enterprise platform for role-based compliance operations across teams, branches, and approvals."
+              : "Reset your password and get back to compliance management securely."}
+          </p>
 
-        <p className="text-[#18206F]/60 mb-8">
-          {mode === "login"
-            ? "Secure enterprise platform"
-            : "Reset your password with your registered email."}
-        </p>
+          <div className="login-points">
+            <span>Role-based access</span>
+            <span>Smart workflow</span>
+            <span>Audit visibility</span>
+          </div>
+        </aside>
 
-        <input
-          type="email"
-          placeholder="Enter Email"
-          value={form.email}
-          className="w-full p-4 mb-5 rounded-xl bg-[#18206F]/5 outline-none border border-[#CBCBD4]"
-          onChange={(e) =>
-            setForm({
-              ...form,
-              email: e.target.value,
-            })
-          }
-        />
+        <div className="login-form-wrap">
+          <form
+            onSubmit={mode === "login" ? handleLogin : handleForgotPassword}
+            className="login-form"
+          >
+            <div className="mb-6">
+              <div className="brand-badge mb-4">ViMATE</div>
+              <h1>{mode === "login" ? "Welcome back" : "Reset password"}</h1>
+              <p className="mt-2">
+                {mode === "login"
+                  ? "Secure enterprise platform for role-based compliance operations."
+                  : "Reset your password with your registered email."}
+              </p>
+            </div>
 
-        {mode === "login" ? (
-          <input
-            type="password"
-            placeholder="Enter Password"
-            value={form.password}
-            className="w-full p-4 mb-6 rounded-xl bg-[#18206F]/5 outline-none border border-[#CBCBD4]"
-            onChange={(e) =>
-              setForm({
-                ...form,
-                password: e.target.value,
-              })
-            }
-          />
-        ) : (
-          <>
-            <input
-              type="password"
-              placeholder="New Password"
-              value={form.newPassword}
-              className="w-full p-4 mb-5 rounded-xl bg-[#18206F]/5 outline-none border border-[#CBCBD4]"
-              onChange={(e) =>
-                setForm({
-                  ...form,
-                  newPassword: e.target.value,
-                })
-              }
-            />
+            <div className="form-stack">
+              <input
+                type="email"
+                placeholder="Enter Email"
+                value={form.email}
+                className="form-field"
+                onChange={(e) =>
+                  setForm({
+                    ...form,
+                    email: e.target.value,
+                  })
+                }
+              />
 
-            <input
-              type="password"
-              placeholder="Confirm New Password"
-              value={form.confirmPassword}
-              className="w-full p-4 mb-6 rounded-xl bg-[#18206F]/5 outline-none border border-[#CBCBD4]"
-              onChange={(e) =>
-                setForm({
-                  ...form,
-                  confirmPassword: e.target.value,
-                })
-              }
-            />
-          </>
-        )}
+              {mode === "login" ? (
+                <input
+                  type="password"
+                  placeholder="Enter Password"
+                  value={form.password}
+                  className="form-field"
+                  onChange={(e) =>
+                    setForm({
+                      ...form,
+                      password: e.target.value,
+                    })
+                  }
+                />
+              ) : (
+                <>
+                  <input
+                    type="password"
+                    placeholder="New Password"
+                    value={form.newPassword}
+                    className="form-field"
+                    onChange={(e) =>
+                      setForm({
+                        ...form,
+                        newPassword: e.target.value,
+                      })
+                    }
+                  />
 
-        <button
-          disabled={loading}
-          className="w-full bg-[#18206F] text-white hover:bg-[#18206F]/85 transition-all duration-300 p-4 rounded-xl font-bold"
-        >
-          {loading
-            ? mode === "login"
-              ? "Logging in..."
-              : "Resetting..."
-            : mode === "login"
-              ? "Login"
-              : "Reset Password"}
-        </button>
+                  <input
+                    type="password"
+                    placeholder="Confirm New Password"
+                    value={form.confirmPassword}
+                    className="form-field"
+                    onChange={(e) =>
+                      setForm({
+                        ...form,
+                        confirmPassword: e.target.value,
+                      })
+                    }
+                  />
+                </>
+              )}
+            </div>
 
-        {message && <p className="mt-4 text-sm text-emerald-600">{message}</p>}
-
-        <div className="mt-6 flex justify-between items-center text-sm text-[#18206F]/60">
-          {mode === "login" ? (
-            <button
-              type="button"
-              onClick={handleModeToggle}
-              className="text-[#18206F] font-semibold hover:text-[#D4AF37]"
-            >
-              Forgot password?
+            <button disabled={loading} className="login-button mt-6">
+              {loading
+                ? mode === "login"
+                  ? "Logging in..."
+                  : "Resetting..."
+                : mode === "login"
+                  ? "Login"
+                  : "Reset Password"}
             </button>
-          ) : (
-            <button
-              type="button"
-              onClick={handleModeToggle}
-              className="text-[#18206F] font-semibold hover:text-[#D4AF37]"
-            >
-              Back to login
-            </button>
-          )}
-        </div>
 
-        <div className="mt-6 text-sm text-[#18206F]/60">
-          <p>Super Admin: admin@saas.com</p>
-          <p>Password: Admin@123</p>
+            {message && (
+              <p className="mt-4 text-sm font-medium text-emerald-600">
+                {message}
+              </p>
+            )}
+
+            <div className="mt-5 flex items-center justify-between text-sm text-[#18206F]/65">
+              {mode === "login" ? (
+                <button
+                  type="button"
+                  onClick={handleModeToggle}
+                  className="font-semibold text-[#18206F] hover:text-[#D4AF37]"
+                >
+                  Forgot password?
+                </button>
+              ) : (
+                <button
+                  type="button"
+                  onClick={handleModeToggle}
+                  className="font-semibold text-[#18206F] hover:text-[#D4AF37]"
+                >
+                  Back to login
+                </button>
+              )}
+            </div>
+
+            <div className="support-box">
+              <p>
+                <strong>Super Admin:</strong> admin@saas.com
+              </p>
+              <p className="mt-1">
+                <strong>Password:</strong> Admin@123
+              </p>
+            </div>
+          </form>
         </div>
-      </form>
+      </div>
     </div>
   );
 }

@@ -45,15 +45,21 @@ export default function DataTable({
     return row[column.key];
   }, []);
 
-  const getCellValue = useCallback((column, row) => {
-    if (column.render) return column.render(row);
-    return getRawCellValue(column, row);
-  }, [getRawCellValue]);
+  const getCellValue = useCallback(
+    (column, row) => {
+      if (column.render) return column.render(row);
+      return getRawCellValue(column, row);
+    },
+    [getRawCellValue],
+  );
 
-  const getSortableValue = useCallback((column, row) => {
-    if (typeof column.sortValue === "function") return column.sortValue(row);
-    return getRawCellValue(column, row);
-  }, [getRawCellValue]);
+  const getSortableValue = useCallback(
+    (column, row) => {
+      if (typeof column.sortValue === "function") return column.sortValue(row);
+      return getRawCellValue(column, row);
+    },
+    [getRawCellValue],
+  );
 
   const filterableColumns = useMemo(
     () =>
@@ -184,7 +190,7 @@ export default function DataTable({
     <div className="space-y-4 text-sm">
       <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
         <div className="flex flex-col gap-2">
-          <div className="flex items-center gap-3 rounded-xl bg-white border border-[#CBCBD4] px-2 py-2">
+          <div className="flex items-center gap-3 rounded-xl border border-[#D9DCE8] bg-white/85 px-3 py-2.5 shadow-sm">
             <FaSearch className="text-[#18206F]/60" />
             <input
               value={search}
@@ -193,7 +199,7 @@ export default function DataTable({
                 setPage(1);
               }}
               placeholder={searchPlaceholder}
-              className="w-full bg-transparent outline-none"
+              className="w-full bg-transparent text-[#18206F] outline-none placeholder:text-[#18206F]/40"
             />
           </div>
 
@@ -201,7 +207,7 @@ export default function DataTable({
             <div className="flex flex-wrap gap-3">
               {filterableColumns.map((column) => (
                 <div key={column.key} className="min-w-[160px]">
-                  <label className="block text-sm text-[#18206F]/60 mb-2">
+                  <label className="mb-2 block text-xs font-semibold uppercase tracking-[0.12em] text-[#18206F]/60">
                     {column.label}
                   </label>
                   <select
@@ -213,7 +219,7 @@ export default function DataTable({
                       }));
                       setPage(1);
                     }}
-                    className="w-full rounded-xl bg-white border border-[#CBCBD4] px-2 py-2 outline-none"
+                    className="w-full rounded-xl border border-[#D9DCE8] bg-white px-3 py-2.5 text-[#18206F] outline-none focus:border-[#D4AF37]"
                   >
                     {column.filterOptions.map((option) => (
                       <option key={option} value={option}>
@@ -224,15 +230,15 @@ export default function DataTable({
                 </div>
               ))}
               <div className="min-w-[220px]">
-                <label className="block text-sm text-[#18206F]/60 mb-2">
+                <label className="mb-2 block text-xs font-semibold uppercase tracking-[0.12em] text-[#18206F]/60">
                   Columns
                 </label>
-                <div className="rounded-xl bg-white border border-[#CBCBD4] px-3 py-2">
+                <div className="rounded-xl border border-[#D9DCE8] bg-white px-3 py-2.5 shadow-sm">
                   <div className="flex flex-wrap gap-2">
                     {columns.map((column) => (
                       <label
                         key={column.key}
-                        className="inline-flex items-center gap-2 text-xs"
+                        className="inline-flex items-center gap-2 text-xs text-[#18206F]/75"
                       >
                         <input
                           type="checkbox"
@@ -254,12 +260,12 @@ export default function DataTable({
           )}
         </div>
 
-        <div className="flex items-center gap-3">
+        <div className="flex flex-wrap items-center gap-3">
           <button
             type="button"
             onClick={exportExcel}
             disabled={shownColumns.length === 0 || sortedData.length === 0}
-            className="inline-flex items-center gap-2 rounded-xl border border-[#CBCBD4] bg-white px-4 py-3 font-semibold text-[#18206F] disabled:opacity-40"
+            className="inline-flex items-center gap-2 rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-2.5 font-semibold text-emerald-700 shadow-sm transition hover:-translate-y-0.5 hover:bg-emerald-100 disabled:opacity-40"
           >
             <FaFileExcel />
             Excel
@@ -268,24 +274,24 @@ export default function DataTable({
             type="button"
             onClick={exportPdf}
             disabled={shownColumns.length === 0 || sortedData.length === 0}
-            className="inline-flex items-center gap-2 rounded-xl border border-[#CBCBD4] bg-white px-4 py-3 font-semibold text-[#18206F] disabled:opacity-40"
+            className="inline-flex items-center gap-2 rounded-xl border border-red-200 bg-red-50 px-4 py-2.5 font-semibold text-red-700 shadow-sm transition hover:-translate-y-0.5 hover:bg-red-100 disabled:opacity-40"
           >
             <FaFilePdf />
             PDF
           </button>
-          <div className="rounded-xl bg-white border border-[#CBCBD4] px-4 py-3 text-sm text-[#18206F]/60">
+          <div className="rounded-xl border border-[#D9DCE8] bg-white px-4 py-2.5 text-sm font-semibold text-[#18206F]/65 shadow-sm">
             {sortedData.length} result{sortedData.length === 1 ? "" : "s"}
           </div>
 
-          <div className="rounded-xl bg-white border border-[#CBCBD4] px-4 py-3">
-            <label className="text-[#18206F]/60 text-sm mr-2">Rows:</label>
+          <div className="rounded-xl border border-[#D9DCE8] bg-white px-4 py-2.5 shadow-sm">
+            <label className="mr-2 text-sm text-[#18206F]/60">Rows:</label>
             <select
               value={currentPageSize}
               onChange={(e) => {
                 setCurrentPageSize(Number(e.target.value));
                 setPage(1);
               }}
-              className="rounded-lg bg-white border border-[#CBCBD4] px-3 py-2 outline-none"
+              className="rounded-lg border border-[#D9DCE8] bg-white px-3 py-2 outline-none focus:border-[#D4AF37]"
             >
               {pageSizeOptions.map((size) => (
                 <option key={size} value={size}>
@@ -297,26 +303,26 @@ export default function DataTable({
         </div>
       </div>
 
-      <div className="overflow-x-auto rounded-2xl border border-[#CBCBD4] bg-white">
-        <table className="w-full min-w-[720px] text-left text-sm">
-          <thead className="bg-[#18206F]/5 text-[#18206F]/70">
+      <div className="overflow-x-auto rounded-[20px] border border-[#D9DCE8] bg-white shadow-[0_18px_45px_rgba(24,32,111,0.08)]">
+        <table className="w-full min-w-[720px] border-separate border-spacing-0 text-left text-sm">
+          <thead className="bg-[#18206F] text-white">
             <tr>
               {shownColumns.map((column) => (
                 <th
                   key={column.key}
-                  className="px-2 py-2 font-semibold"
+                  className="whitespace-nowrap px-4 py-3.5 font-semibold"
                   onClick={() =>
                     column.sortable !== false && toggleSort(column.key)
                   }
                 >
-                  <div className="flex items-center gap-2 cursor-pointer">
-                    {column.label}
+                  <div className="flex cursor-pointer items-center gap-2">
+                    <span>{column.label}</span>
                     {column.sortable !== false && renderSortIcon(column.key)}
                   </div>
                 </th>
               ))}
               {(onView || onEdit || onDelete) && (
-                <th className="px-2 py-2 font-semibold">Actions</th>
+                <th className="px-4 py-3.5 font-semibold">Actions</th>
               )}
             </tr>
           </thead>
@@ -328,7 +334,7 @@ export default function DataTable({
                   colSpan={
                     shownColumns.length + (onView || onEdit || onDelete ? 1 : 0)
                   }
-                  className="px-2 py-2 text-center text-[#18206F]/60"
+                  className="px-4 py-8 text-center text-[#18206F]/60"
                 >
                   Loading...
                 </td>
@@ -339,7 +345,7 @@ export default function DataTable({
                   colSpan={
                     shownColumns.length + (onView || onEdit || onDelete ? 1 : 0)
                   }
-                  className="px-2 py-2 text-center text-[#18206F]/60"
+                  className="px-4 py-8 text-center text-[#18206F]/60"
                 >
                   No records found.
                 </td>
@@ -347,22 +353,30 @@ export default function DataTable({
             ) : (
               pageData.map((row, rowIndex) => (
                 <tr
-                  key={row.id || row._id || row.name || `${effectivePage}-${rowIndex}`}
-                  className="border-t border-[#CBCBD4] hover:bg-[#18206F]/5 transition-colors"
+                  key={
+                    row.id ||
+                    row._id ||
+                    row.name ||
+                    `${effectivePage}-${rowIndex}`
+                  }
+                  className="border-t border-[#E4E7EF] odd:bg-white even:bg-[#F9FAFC] transition-colors hover:bg-[#F3EEC8]/30"
                 >
                   {shownColumns.map((column) => (
-                    <td key={column.key} className="px-2 py-2 align-top">
+                    <td
+                      key={column.key}
+                      className="px-4 py-3.5 align-top text-[#18206F]/82"
+                    >
                       {getCellValue(column, row)}
                     </td>
                   ))}
                   {(onView || onEdit || onDelete) && (
-                    <td className="px-2 py-2 align-top">
+                    <td className="px-4 py-3.5 align-top">
                       <div className="inline-flex items-center gap-2">
                         {onView && (
                           <button
                             type="button"
                             onClick={() => onView(row)}
-                            className="rounded-lg bg-[#18206F]/5 p-2 text-[#18206F]/70 hover:bg-[#D4AF37]/15 hover:text-[#18206F]"
+                            className="rounded-lg bg-[#18206F]/5 p-2 text-[#18206F]/70 transition hover:bg-[#D4AF37]/15 hover:text-[#18206F]"
                             title="View"
                           >
                             <FaEye />
@@ -373,7 +387,7 @@ export default function DataTable({
                           <button
                             type="button"
                             onClick={() => onEdit(row)}
-                            className="rounded-lg bg-[#18206F] p-2 text-white hover:bg-[#18206F]/80"
+                            className="rounded-lg bg-[#18206F] p-2 text-white transition hover:bg-[#18206F]/80"
                             title="Edit"
                           >
                             <FaEdit />
@@ -384,7 +398,7 @@ export default function DataTable({
                           <button
                             type="button"
                             onClick={() => onDelete(row)}
-                            className="rounded-lg bg-red-600 p-2 text-white hover:bg-red-700"
+                            className="rounded-lg bg-red-600 p-2 text-white transition hover:bg-red-700"
                             title="Delete"
                           >
                             <FaTrash />
@@ -400,7 +414,7 @@ export default function DataTable({
         </table>
       </div>
 
-      <div className="flex flex-wrap items-center justify-between gap-3 rounded-xl bg-white border border-[#CBCBD4] px-4 py-3 text-sm text-[#18206F]/60">
+      <div className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-[#D9DCE8] bg-white px-4 py-3 text-sm font-medium text-[#18206F]/60 shadow-sm">
         <span>
           Showing {pageData.length} of {sortedData.length} result
           {sortedData.length === 1 ? "" : "s"}
@@ -409,7 +423,7 @@ export default function DataTable({
         <div className="flex items-center gap-2">
           <button
             disabled={effectivePage <= 1}
-            className="rounded-lg border border-[#CBCBD4] bg-white px-3 py-2 disabled:opacity-40"
+            className="rounded-lg border border-[#D9DCE8] bg-white px-3 py-2 disabled:opacity-40"
             onClick={() => setPage((current) => Math.max(1, current - 1))}
           >
             Previous
@@ -419,7 +433,7 @@ export default function DataTable({
           </span>
           <button
             disabled={effectivePage >= totalPages}
-            className="rounded-lg border border-[#CBCBD4] bg-white px-3 py-2 disabled:opacity-40"
+            className="rounded-lg border border-[#D9DCE8] bg-white px-3 py-2 disabled:opacity-40"
             onClick={() =>
               setPage((current) => Math.min(totalPages, current + 1))
             }
