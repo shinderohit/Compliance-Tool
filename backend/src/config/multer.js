@@ -47,6 +47,11 @@ const fileFilter = (req, file, cb) => {
     const ext = path.extname(
         file.originalname
     ).toLowerCase();
+    const allowedLogoTypes = [".jpg", ".jpeg", ".png"];
+
+    if (file.fieldname === "companyLogo" && !allowedLogoTypes.includes(ext)) {
+        return cb(new Error("Company logo must be a JPG or PNG image"));
+    }
 
     if (!allowedTypes.includes(ext)) {
         return cb(

@@ -38,6 +38,7 @@ const getClientDashboard = async (req, res) => {
                 name: client.name,
                 email: client.email,
                 slug: client.slug,
+                logo: client.logo,
             },
             stats: {
                 totalCompanies: client.companies.length,

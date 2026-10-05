@@ -179,6 +179,7 @@ const createClientController = async (req, res) => {
         const ptCertificateFile = req.files?.ptCertificate?.[0];
         const lwfCertificateFile = req.files?.lwfCertificate?.[0];
         const bulkUploadFile = req.files?.bulkUpload?.[0];
+        const companyLogoFile = req.files?.companyLogo?.[0];
 
         if (!gstCertificateFile || !seCertificateFile || !panCertificateFile || !pfCertificateFile || !esicCertificateFile || !ptCertificateFile || !lwfCertificateFile) {
             return res.status(400).json({
@@ -232,6 +233,7 @@ const createClientController = async (req, res) => {
         const ptCertificate = storageService.getFileMetadata(ptCertificateFile);
         const lwfCertificate = storageService.getFileMetadata(lwfCertificateFile);
         const bulkUpload = bulkUploadFile ? storageService.getFileMetadata(bulkUploadFile) : null;
+        const logo = companyLogoFile ? storageService.getFileMetadata(companyLogoFile) : null;
 
         const client = await prisma.$transaction(async (tx) => {
             const resolvedIndustryId = await resolveIndustryId(tx, industryId);
@@ -255,6 +257,7 @@ const createClientController = async (req, res) => {
                     userId: user.id,
                     kaoId: kao.id,
                     serviceModel: serviceModel || "SAAS",
+                    logo,
                     state,
                     city,
                     location,
@@ -322,6 +325,7 @@ const createClientController = async (req, res) => {
             message: "Client created successfully",
             client,
             loginUrl,
+            loginName: email,
         });
     } catch (error) {
         console.log(error);
@@ -362,6 +366,7 @@ const createCompanyController = async (req, res) => {
         }
 
         const requiredFiles = ["panCertificate", "gstCertificate", "seCertificate", "pfCertificate", "esicCertificate", "ptCertificate", "lwfCertificate"];
+        const companyLogoFile = req.files?.companyLogo?.[0];
         const missingFile = requiredFiles.find((field) => !req.files?.[field]?.[0]);
         if (missingFile) {
             return res.status(400).json({ success: false, message: "All statutory document uploads are required" });
@@ -384,6 +389,7 @@ const createCompanyController = async (req, res) => {
             const file = req.files?.[field]?.[0];
             if (file) fileData[field] = storageService.getFileMetadata(file);
         });
+        const logo = companyLogoFile ? storageService.getFileMetadata(companyLogoFile) : null;
 
         const company = await prisma.$transaction(async (tx) => {
             const resolvedIndustryId = await resolveIndustryId(tx, industryId);
@@ -400,6 +406,7 @@ const createCompanyController = async (req, res) => {
                     email,
                     userId: user.id,
                     clientId: client.id,
+                    logo,
                     state,
                     city,
                     location,
@@ -430,7 +437,12 @@ const createCompanyController = async (req, res) => {
             reason: "Super admin created company",
         });
 
-        return res.status(201).json({ success: true, company, loginUrl: `/company/${slug}/login` });
+        return res.status(201).json({
+            success: true,
+            company,
+            loginUrl: `/company/${slug}/login`,
+            loginName: email,
+        });
     } catch (error) {
         console.log(error);
         return res.status(500).json({ success: false, message: "Server Error" });

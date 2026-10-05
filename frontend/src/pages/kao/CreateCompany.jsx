@@ -2,7 +2,11 @@ import { ExternalLink, Upload } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useLocation } from "react-router-dom";
 import API from "../../api/axios";
-import { governmentIndustries, statutoryDocuments } from "../../data/onboardingFlow";
+import logo from "../../assets/Logo.png";
+import {
+  governmentIndustries,
+  statutoryDocuments,
+} from "../../data/onboardingFlow";
 
 const initialForm = {
   clientId: "",
@@ -32,6 +36,7 @@ export default function CreateCompany() {
   const isSuperAdmin = location.pathname.startsWith("/super-admin");
   const [form, setForm] = useState(initialForm);
   const [files, setFiles] = useState({
+    companyLogo: null,
     panCertificate: null,
     gstCertificate: null,
     seCertificate: null,
@@ -108,16 +113,20 @@ export default function CreateCompany() {
         if (file) payload.append(key, file);
       });
 
-      const endpoint = isSuperAdmin ? "/super-admin/create-company" : "/kao/create-company";
+      const endpoint = isSuperAdmin
+        ? "/super-admin/create-company"
+        : "/kao/create-company";
       const res = await API.post(endpoint, payload);
 
       setCreatedCompany({
         name: res.data.company.name,
         loginUrl: res.data.loginUrl,
+        loginName: res.data.loginName || res.data.company?.email || "",
       });
 
       setForm(initialForm);
       setFiles({
+        companyLogo: null,
         panCertificate: null,
         gstCertificate: null,
         seCertificate: null,
@@ -138,12 +147,14 @@ export default function CreateCompany() {
 
   return (
     <div className="max-w-4xl space-y-6">
-      <div>
-        <h1 className="text-2xl font-bold">Onboarding Company/Branch</h1>
-        <p className="mt-2 text-[#18206F]/60 text-lg">
-          Onboarding a company/branch for one of your clients and generating its
-          login URL.
-        </p>
+      <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+        <div>
+          <h1 className="text-2xl font-bold">Onboarding Company/Branch</h1>
+          <p className="mt-2 text-[#18206F]/60 text-lg">
+            Onboarding a company/branch for one of your clients and generating
+            its login URL.
+          </p>
+        </div>
       </div>
 
       <form
@@ -249,36 +260,142 @@ export default function CreateCompany() {
           className="w-full rounded-lg bg-[#18206F]/5 p-3 outline-none"
         >
           <option value="">Select Industry</option>
-          {(governmentIndustries[form.appropriateGovernment] || []).map((industry) => (
-            <option key={industry} value={industry}>
-              {industry}
-            </option>
-          ))}
+          {(governmentIndustries[form.appropriateGovernment] || []).map(
+            (industry) => (
+              <option key={industry} value={industry}>
+                {industry}
+              </option>
+            ),
+          )}
         </select>
 
-        <input name="state" placeholder="State" value={form.state} onChange={handleChange} required className="w-full rounded-lg bg-[#18206F]/5 p-3 outline-none" />
-        <input name="city" placeholder="City / District" value={form.city} onChange={handleChange} required className="w-full rounded-lg bg-[#18206F]/5 p-3 outline-none" />
-        <input name="location" placeholder="Location" value={form.location} onChange={handleChange} required className="w-full rounded-lg bg-[#18206F]/5 p-3 outline-none" />
-        <input name="pincode" placeholder="Pin-code" value={form.pincode} onChange={handleChange} required className="w-full rounded-lg bg-[#18206F]/5 p-3 outline-none" />
-        <input name="panNumber" placeholder="PAN Number" value={form.panNumber} onChange={handleChange} required className="w-full rounded-lg bg-[#18206F]/5 p-3 outline-none" />
-        <input name="gstNumber" placeholder="GST Number" value={form.gstNumber} onChange={handleChange} required className="w-full rounded-lg bg-[#18206F]/5 p-3 outline-none" />
-        <input name="pfNumber" placeholder="PF Number" value={form.pfNumber} onChange={handleChange} required className="w-full rounded-lg bg-[#18206F]/5 p-3 outline-none" />
-        <input name="esicNumber" placeholder="ESIC Number" value={form.esicNumber} onChange={handleChange} required className="w-full rounded-lg bg-[#18206F]/5 p-3 outline-none" />
-        <input name="ptNumber" placeholder="PT Number" value={form.ptNumber} onChange={handleChange} required className="w-full rounded-lg bg-[#18206F]/5 p-3 outline-none" />
-        <input name="lwfNumber" placeholder="LWF Number" value={form.lwfNumber} onChange={handleChange} required className="w-full rounded-lg bg-[#18206F]/5 p-3 outline-none" />
+        <input
+          name="state"
+          placeholder="State"
+          value={form.state}
+          onChange={handleChange}
+          required
+          className="w-full rounded-lg bg-[#18206F]/5 p-3 outline-none"
+        />
+        <input
+          name="city"
+          placeholder="City / District"
+          value={form.city}
+          onChange={handleChange}
+          required
+          className="w-full rounded-lg bg-[#18206F]/5 p-3 outline-none"
+        />
+        <input
+          name="location"
+          placeholder="Location"
+          value={form.location}
+          onChange={handleChange}
+          required
+          className="w-full rounded-lg bg-[#18206F]/5 p-3 outline-none"
+        />
+        <input
+          name="pincode"
+          placeholder="Pin-code"
+          value={form.pincode}
+          onChange={handleChange}
+          required
+          className="w-full rounded-lg bg-[#18206F]/5 p-3 outline-none"
+        />
+        <input
+          name="panNumber"
+          placeholder="PAN Number"
+          value={form.panNumber}
+          onChange={handleChange}
+          required
+          className="w-full rounded-lg bg-[#18206F]/5 p-3 outline-none"
+        />
+        <input
+          name="gstNumber"
+          placeholder="GST Number"
+          value={form.gstNumber}
+          onChange={handleChange}
+          required
+          className="w-full rounded-lg bg-[#18206F]/5 p-3 outline-none"
+        />
+        <input
+          name="pfNumber"
+          placeholder="PF Number"
+          value={form.pfNumber}
+          onChange={handleChange}
+          required
+          className="w-full rounded-lg bg-[#18206F]/5 p-3 outline-none"
+        />
+        <input
+          name="esicNumber"
+          placeholder="ESIC Number"
+          value={form.esicNumber}
+          onChange={handleChange}
+          required
+          className="w-full rounded-lg bg-[#18206F]/5 p-3 outline-none"
+        />
+        <input
+          name="ptNumber"
+          placeholder="PT Number"
+          value={form.ptNumber}
+          onChange={handleChange}
+          required
+          className="w-full rounded-lg bg-[#18206F]/5 p-3 outline-none"
+        />
+        <input
+          name="lwfNumber"
+          placeholder="LWF Number"
+          value={form.lwfNumber}
+          onChange={handleChange}
+          required
+          className="w-full rounded-lg bg-[#18206F]/5 p-3 outline-none"
+        />
 
         {statutoryDocuments.map(([name, label]) => (
-          <label key={name} className="flex min-h-12 cursor-pointer items-center gap-3 rounded-lg bg-[#18206F]/5 p-3 text-[#18206F]/70">
+          <label
+            key={name}
+            className="flex min-h-12 cursor-pointer items-center gap-3 rounded-lg bg-[#18206F]/5 p-3 text-[#18206F]/70"
+          >
             <Upload size={18} />
-            <span className="min-w-0 flex-1 truncate">{files[name]?.name || label}</span>
-            <input name={name} type="file" accept=".pdf,.doc,.docx,.jpg,.jpeg,.png" onChange={handleFileChange} required className="sr-only" />
+            <span className="min-w-0 flex-1 truncate">
+              {files[name]?.name || label}
+            </span>
+            <input
+              name={name}
+              type="file"
+              accept=".pdf,.doc,.docx,.jpg,.jpeg,.png"
+              onChange={handleFileChange}
+              required
+              className="sr-only"
+            />
           </label>
         ))}
 
         <label className="flex min-h-12 cursor-pointer items-center gap-3 rounded-lg bg-[#18206F]/5 p-3 text-[#18206F]/70 md:col-span-2">
           <Upload size={18} />
-          <span className="min-w-0 flex-1 truncate">{files.bulkUpload?.name || "Upload Excel / CSV for bulk onboarding"}</span>
-          <input name="bulkUpload" type="file" accept=".xlsx,.xls,.csv" onChange={handleFileChange} className="sr-only" />
+          <span className="min-w-0 flex-1 truncate">
+            {files.companyLogo?.name || "Upload Company Logo (optional)"}
+          </span>
+          <input
+            name="companyLogo"
+            type="file"
+            accept=".png,.jpg,.jpeg"
+            onChange={handleFileChange}
+            className="sr-only"
+          />
+        </label>
+
+        <label className="flex min-h-12 cursor-pointer items-center gap-3 rounded-lg bg-[#18206F]/5 p-3 text-[#18206F]/70 md:col-span-2">
+          <Upload size={18} />
+          <span className="min-w-0 flex-1 truncate">
+            {files.bulkUpload?.name || "Upload Excel / CSV for bulk onboarding"}
+          </span>
+          <input
+            name="bulkUpload"
+            type="file"
+            accept=".xlsx,.xls,.csv"
+            onChange={handleFileChange}
+            className="sr-only"
+          />
         </label>
 
         <button
@@ -295,25 +412,32 @@ export default function CreateCompany() {
             {createdCompany.name} created successfully
           </p>
 
-          <div className="mt-3 flex flex-col gap-3 sm:flex-row sm:items-center">
-            <a
-              href={createdCompany.loginUrl}
-              target="_blank"
-              rel="noreferrer"
-              className="inline-flex items-center gap-2 text-blue-700 hover:text-blue-700"
-            >
-              {createdCompany.loginUrl}
-              <ExternalLink size={16} />
-            </a>
-            <button
-              type="button"
-              onClick={() =>
-                window.open(createdCompany.loginUrl, "_blank", "noopener")
-              }
-              className="rounded-lg bg-[#18206F]/5 px-4 py-2 text-sm text-[#18206F] transition hover:bg-[#D4AF37]/15"
-            >
-              Open Login
-            </button>
+          <div className="mt-3 space-y-3">
+            <p className="text-sm text-green-100">
+              <span className="font-semibold">Login Name:</span>{" "}
+              {createdCompany.loginName}
+            </p>
+
+            <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
+              <a
+                href={createdCompany.loginUrl}
+                target="_blank"
+                rel="noreferrer"
+                className="inline-flex items-center gap-2 text-blue-700 hover:text-blue-700"
+              >
+                {createdCompany.loginUrl}
+                <ExternalLink size={16} />
+              </a>
+              <button
+                type="button"
+                onClick={() =>
+                  window.open(createdCompany.loginUrl, "_blank", "noopener")
+                }
+                className="rounded-lg bg-[#18206F]/5 px-4 py-2 text-sm text-[#18206F] transition hover:bg-[#D4AF37]/15"
+              >
+                Open Login
+              </button>
+            </div>
           </div>
         </div>
       )}

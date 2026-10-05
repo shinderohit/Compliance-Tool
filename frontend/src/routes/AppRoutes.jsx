@@ -335,7 +335,7 @@ export default function AppRoutes() {
             path="/kao/upload-history"
             element={
               <RoleRoute allowedRoles={["KAO"]}>
-                <PlaceholderPage title="Upload History" description="Track client and company/branch bulk uploads submitted under this KAO." />
+                <UploadHistory />
               </RoleRoute>
             }
           />
@@ -401,7 +401,10 @@ export default function AppRoutes() {
           <Route
             path="/client/manage-companies"
             element={
-              <RoleRoute allowedRoles={["CLIENT"]} allowedServiceModels={["PAAS"]}>
+              <RoleRoute
+                allowedRoles={["CLIENT"]}
+                allowedServiceModels={["PAAS"]}
+              >
                 <ManageCompanies />
               </RoleRoute>
             }
@@ -428,7 +431,10 @@ export default function AppRoutes() {
           <Route
             path="/client/create-company"
             element={
-              <RoleRoute allowedRoles={["CLIENT"]} allowedServiceModels={["PAAS"]}>
+              <RoleRoute
+                allowedRoles={["CLIENT"]}
+                allowedServiceModels={["PAAS"]}
+              >
                 <CreateCompany />
               </RoleRoute>
             }

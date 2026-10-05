@@ -1,15 +1,44 @@
 import { LogOut } from "lucide-react";
 
+import { useEffect, useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 
+import logo from "../assets/Logo.png";
+import API from "../api/axios";
 import { useAuth } from "../context/AuthContext";
 import { roleMenus } from "../data/onboardingFlow";
 
 export default function Sidebar() {
   const { user, logout } = useAuth();
   const location = useLocation();
+  const [organizationLogo, setOrganizationLogo] = useState(user?.logo || null);
 
   const role = user?.role;
+  useEffect(() => {
+    if (role !== "CLIENT" && role !== "COMPANY") {
+      setOrganizationLogo(null);
+      return undefined;
+    }
+
+    let active = true;
+    const endpoint =
+      role === "CLIENT" ? "/client/dashboard" : "/company/dashboard";
+
+    API.get(endpoint)
+      .then(({ data }) => {
+        if (active) {
+          setOrganizationLogo(data.client?.logo || data.company?.logo || null);
+        }
+      })
+      .catch((error) => {
+        console.error("Failed to load organization logo", error);
+      });
+
+    return () => {
+      active = false;
+    };
+  }, [role, user?.id]);
+
   const menuItems =
     role === "CLIENT" && user?.serviceModel !== "PAAS"
       ? roleMenus.CLIENT?.filter(
@@ -17,23 +46,30 @@ export default function Sidebar() {
             !["Onboarding Company/Branch", "Manage Companies"].includes(name),
         )
       : roleMenus[role];
+  const logoPath = organizationLogo?.fileUrl || organizationLogo;
+  let sidebarLogo = logo;
+
+  if (logoPath) {
+    try {
+      const apiOrigin = new URL(API.defaults.baseURL).origin;
+      sidebarLogo = new URL(logoPath, `${apiOrigin}/`).href;
+    } catch {
+      sidebarLogo = logo;
+    }
+  }
 
   return (
     <aside className="sticky top-0 flex h-screen w-[290px] shrink-0 flex-col border-r border-[#D4AF37]/30 bg-white/90 p-5 shadow-[12px_0_35px_rgba(24,32,111,0.08)] backdrop-blur-xl">
-      <div className="mb-7 rounded-[18px] border border-[#D4AF37]/30 bg-gradient-to-br from-[#18206F] via-[#1d2d89] to-[#27318c] p-3.5 text-white shadow-[0_12px_24px_rgba(24,32,111,0.18)]">
-        <div className="flex items-center gap-2">
-          <div className="inline-flex h-8 w-8 items-center justify-center rounded-lg bg-white/12 text-[10px] font-black tracking-[0.16em] text-[#F8E7A3]">
-            V
-          </div>
-          <div>
-            <h1 className="text-lg font-black tracking-tight text-white">
-              ViMATE
-            </h1>
-            <p className="text-[10px] font-semibold uppercase tracking-[0.14em] text-[#F8E7A3]">
-              Compliance
-            </p>
-          </div>
-        </div>
+      <div className="mb-1 flex items-center justify-center">
+        <img
+          src={sidebarLogo}
+          alt="Organization logo"
+          className="h-20 w-auto max-w-[180px] object-contain"
+          onError={(event) => {
+            event.currentTarget.onerror = null;
+            event.currentTarget.src = logo;
+          }}
+        />
       </div>
 
       <div className="sidebar-scrollbar-hidden flex-1 space-y-1.5 overflow-y-auto pr-1">

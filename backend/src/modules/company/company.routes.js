@@ -44,6 +44,7 @@ router.post(
     authMiddleware,
     authorizeRoles("CLIENT"),
     upload.fields([
+        { name: "companyLogo", maxCount: 1 },
         { name: "panCertificate", maxCount: 1 },
         { name: "gstCertificate", maxCount: 1 },
         { name: "seCertificate", maxCount: 1 },

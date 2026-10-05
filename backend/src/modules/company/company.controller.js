@@ -40,6 +40,7 @@ const createCompanyController = async (req, res) => {
 
         const gstCertificateFile = req.files?.gstCertificate?.[0];
         const seCertificateFile = req.files?.seCertificate?.[0];
+        const companyLogoFile = req.files?.companyLogo?.[0];
         const requiredFiles = ["panCertificate", "gstCertificate", "seCertificate", "pfCertificate", "esicCertificate", "ptCertificate", "lwfCertificate"];
         const missingFile = requiredFiles.find((field) => !req.files?.[field]?.[0]);
 
@@ -113,6 +114,7 @@ const createCompanyController = async (req, res) => {
 
         const gstCertificate = storageService.getFileMetadata(gstCertificateFile);
         const seCertificate = storageService.getFileMetadata(seCertificateFile);
+        const logo = companyLogoFile ? storageService.getFileMetadata(companyLogoFile) : null;
         const fileData = {};
         [...requiredFiles, "bulkUpload"].forEach((field) => {
             const file = req.files?.[field]?.[0];
@@ -141,6 +143,7 @@ const createCompanyController = async (req, res) => {
                     email,
                     userId: user.id,
                     clientId: client.id,
+                    logo,
                     state,
                     city,
                     location,
@@ -207,6 +210,7 @@ const createCompanyController = async (req, res) => {
             success: true,
             company,
             loginUrl: `/company/${slug}/login`,
+            loginName: email,
         });
     } catch (error) {
         console.log(error);
@@ -269,6 +273,7 @@ const getCompanyDashboard = async (req, res) => {
                 name: company.name,
                 email: company.email,
                 slug: company.slug,
+                logo: company.logo,
                 branches: company.branches,
                 selectedBranchId: branchId || null,
             },

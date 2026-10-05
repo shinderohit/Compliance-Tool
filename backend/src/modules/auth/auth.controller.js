@@ -155,6 +155,7 @@ const loginController = async (
                 contactNumber: user.contactNumber,
                 role: user.role,
                 serviceModel: user.client?.serviceModel,
+                logo: user.client?.logo || user.company?.logo || null,
             },
         });
     } catch (error) {
@@ -352,6 +353,7 @@ const createLogin = async (req, res) => {
                 temporaryPassword: result.user.temporaryPassword,
                 entity: result.entity,
                 loginUrl: result.loginUrl,
+                loginName: result.user.email,
             },
         });
     } catch (error) {

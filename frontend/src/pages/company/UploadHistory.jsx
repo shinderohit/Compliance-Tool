@@ -182,10 +182,7 @@ export default function UploadHistory() {
   const [uploads, setUploads] = useState([]);
   const [review, setReview] = useState({ open: false, url: null, name: null });
   const [loading, setLoading] = useState(false);
-  const [confirmOpen, setConfirmOpen] = useState(false);
-  const [targetUpload, setTargetUpload] = useState(null);
   const [selectedUpload, setSelectedUpload] = useState(null);
-  const [deleting, setDeleting] = useState(false);
 
   const fetchUploads = async () => {
     try {
@@ -219,30 +216,6 @@ export default function UploadHistory() {
     }),
     [uploads],
   );
-
-  const handleDelete = (upload) => {
-    setTargetUpload(upload);
-    setConfirmOpen(true);
-  };
-
-  const confirmDelete = async () => {
-    if (!targetUpload) return;
-
-    try {
-      setDeleting(true);
-      await API.delete(`/compliance/uploads/${targetUpload.id}`);
-      setUploads((current) =>
-        current.filter((item) => item.id !== targetUpload.id),
-      );
-      setConfirmOpen(false);
-      setTargetUpload(null);
-    } catch (error) {
-      console.log(error);
-      alert(error?.response?.data?.message || "Failed to delete upload.");
-    } finally {
-      setDeleting(false);
-    }
-  };
 
   const columns = [
     {
@@ -373,7 +346,6 @@ export default function UploadHistory() {
         pageSizeOptions={[5, 10, 20, 50]}
         searchPlaceholder="Search upload history..."
         onView={setSelectedUpload}
-        onDelete={user?.role === "COMPANY" ? handleDelete : undefined}
       />
 
       <UploadDetailsModal
@@ -387,19 +359,6 @@ export default function UploadHistory() {
         url={review.url}
         name={review.name}
         onClose={() => setReview({ open: false, url: null, name: null })}
-      />
-
-      <ConfirmModal
-        open={confirmOpen}
-        title="Remove upload?"
-        message="This will permanently delete the upload history record."
-        confirmLabel="Remove"
-        onConfirm={confirmDelete}
-        loading={deleting}
-        onCancel={() => {
-          setConfirmOpen(false);
-          setTargetUpload(null);
-        }}
       />
     </div>
   );

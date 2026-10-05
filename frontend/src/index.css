@@ -137,8 +137,8 @@ a:focus-visible {
   align-items: center;
   justify-content: center;
   border-radius: 999px;
-  border: 1px solid rgba(212, 175, 55, 0.45);
-  background: rgba(212, 175, 55, 0.12);
+  border: 1px solid rgba(24, 32, 111, 0.68);
+  background: #fff;
   color: var(--brand-navy);
   padding: 6px 12px;
   font-size: 0.72rem;

@@ -73,11 +73,10 @@ model Client {
   pfCertificate                   Json?
   esicNumber                      String?
   esicCertificate                 Json?
-  ptNumber                        String?
-  ptCertificate                   Json?
   lwfNumber                       String?
   lwfCertificate                  Json?
   bulkUpload                      Json?
+  logo                            Json?
   companyNameAsPerGstCertificate  String
   gstCertificate                  Json?
   seDetails                       String
@@ -106,6 +105,7 @@ model Company {
   email             String             @unique
   userId            String             @unique
   clientId          String
+  logo              Json?
   approvalStatus    String             @default("PENDING")
   approvedAt        DateTime?
   approvedBy        String?

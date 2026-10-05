@@ -13,6 +13,7 @@ const findUserByEmail = async (email) => {
         },
         include: {
             client: true,
+            company: true,
         },
     });
 };

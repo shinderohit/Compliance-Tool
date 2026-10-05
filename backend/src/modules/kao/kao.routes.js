@@ -29,6 +29,7 @@ router.post(
     authMiddleware,
     authorizeRoles("KAO"),
     upload.fields([
+        { name: "companyLogo", maxCount: 1 },
         { name: "panCertificate", maxCount: 1 },
         { name: "gstCertificate", maxCount: 1 },
         { name: "seCertificate", maxCount: 1 },
@@ -47,6 +48,7 @@ router.post(
     authMiddleware,
     authorizeRoles("KAO"),
     upload.fields([
+        { name: "companyLogo", maxCount: 1 },
         { name: "panCertificate", maxCount: 1 },
         { name: "gstCertificate", maxCount: 1 },
         { name: "seCertificate", maxCount: 1 },

@@ -2,6 +2,7 @@ import { Building2, Plus, Users } from "lucide-react";
 import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import API from "../../api/axios";
+import logo from "../../assets/Logo.png";
 import DashboardAnalytics from "../../components/dashboard/DashboardAnalytics";
 import DataTable from "../../components/tables/DataTable";
 
@@ -57,7 +58,14 @@ export default function Dashboard() {
     <div className="space-y-8">
       <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
         <div>
-          <h1 className="text-2xl font-bold">Super Admin Dashboard</h1>
+          <div className="flex items-center gap-3">
+            <h1 className="text-2xl font-bold">Super Admin Dashboard</h1>
+            {/* <img
+              src={logo}
+              alt="ViMATE logo"
+              className="h-10 w-auto object-contain"
+            /> */}
+          </div>
           <p className="mt-2 text-lg text-[#18206F]/60">
             Platform-wide tenant, client, company, and upload activity.
           </p>
@@ -135,7 +143,14 @@ export default function Dashboard() {
                   key: "entityType",
                   label: "Entity",
                   sortable: true,
-                  filterOptions: ["All", "KAO", "Client", "Company", "COMPANY", "ComplianceUpload"],
+                  filterOptions: [
+                    "All",
+                    "KAO",
+                    "Client",
+                    "Company",
+                    "COMPANY",
+                    "ComplianceUpload",
+                  ],
                 },
                 { key: "userEmail", label: "User", sortable: true },
                 {

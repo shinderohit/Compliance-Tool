@@ -2,6 +2,8 @@ import { useState } from "react";
 
 import { useNavigate } from "react-router-dom";
 
+import logo from "../../assets/logo.jpg";
+import Logo from "../../assets/Logo.png";
 import API from "../../api/axios";
 
 import { useAuth } from "../../context/AuthContext";
@@ -111,8 +113,12 @@ export default function Login() {
     <div className="login-page">
       <div className="login-shell">
         <aside className="login-brand">
-          <div className="brand-badge bg-white/10 text-white border-white/10">
-            ViMATE
+          <div className=" bg-white/10 text-white border-white/10 flex items-center justify-center p-0">
+            <img
+              src={logo}
+              alt="ViMATE logo"
+              className="h-18 w-auto object-contain"
+            />
           </div>
           <h2>AI Compliance SaaS</h2>
           <p>
@@ -134,7 +140,13 @@ export default function Login() {
             className="login-form"
           >
             <div className="mb-6">
-              <div className="brand-badge mb-4">ViMATE</div>
+              <div className="brand-badge mb-4">
+                <img
+                  src={Logo}
+                  alt="ViMATE logo"
+                  className="h-10 w-auto object-contain"
+                />
+              </div>
               <h1>{mode === "login" ? "Welcome back" : "Reset password"}</h1>
               <p className="mt-2">
                 {mode === "login"
@@ -235,15 +247,6 @@ export default function Login() {
                   Back to login
                 </button>
               )}
-            </div>
-
-            <div className="support-box">
-              <p>
-                <strong>Super Admin:</strong> admin@saas.com
-              </p>
-              <p className="mt-1">
-                <strong>Password:</strong> Admin@123
-              </p>
             </div>
           </form>
         </div>
