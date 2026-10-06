@@ -148,11 +148,11 @@ export default function CreateClient() {
           </p>
         </div>
 
-        <img
+        {/* <img
           src={logo}
           alt="ViMATE logo"
           className="h-12 w-auto object-contain md:ml-auto"
-        />
+        /> */}
       </div>
 
       <form
